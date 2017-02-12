@@ -4,7 +4,6 @@
  * @section profile Register and login section
  *
  * This is section description text.
- * Second line of description.
  *
  * @register object profile {
  * @register int id User id

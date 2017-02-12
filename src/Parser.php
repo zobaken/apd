@@ -234,6 +234,10 @@ class Parser {
             $field->isRequired = false;
             $field->type = $m[1];
         }
+        if (preg_match('/^(\w+)\s*\=\s*(.+)$/', $name, $m)) {
+            $field->defaultValue = $m[2];
+            $field->name = $m[1];
+        }
         return $field;
     }
 
