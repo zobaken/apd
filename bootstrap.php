@@ -5,6 +5,6 @@ if(!defined('APD_ROOT')) {
     if (file_exists(APD_ROOT . '/vendor/autoload.php')) {
         require_once APD_ROOT . '/vendor/autoload.php';
     } elseif(file_exists(APD_ROOT . '/../autoload.php')) {
-        require_once APD_ROOT . '/../vendor/autoload.php';
+        require_once APD_ROOT . '/../autoload.php';
     }
 }
