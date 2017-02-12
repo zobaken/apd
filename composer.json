@@ -1,6 +1,6 @@
 {
   "name": "zobaken/apd",
-  "description": "PHP api documentation generator",
+  "description": "Simple PHP api documentation generator",
   "keywords": [
     "php",
     "api",
