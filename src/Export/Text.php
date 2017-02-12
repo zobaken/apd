@@ -47,10 +47,14 @@ class Text implements Exportable {
                     }
                     $text .= sprintf("\nRequest:\n");
                     foreach ($entry->request as $field) {
+                        $default = '';
+                        if ($field->defaultValue !== null) {
+                            $default = "[default={$field->defaultValier}]";
+                        }
                         if ($field->isRequired) {
-                            $text .= sprintf("%s %s %s [required]\n", $field->type, $field->name, $field->title);
+                            $text .= sprintf("%s %s %s%s [required]\n", $field->type, $field->name, $field->title, $default);
                         } else {
-                            $text .= sprintf("%s %s %s\n", $field->type, $field->name, $field->title);
+                            $text .= sprintf("%s %s %s%s\n", $field->type, $field->name, $field->title);
                         }
                     }
                     $text .= sprintf("\nResponse:\n");
