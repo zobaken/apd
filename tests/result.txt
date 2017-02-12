@@ -1,0 +1,24 @@
+
+Endpoint: 
+/api
+
+Register and login section
+
+This is section description text.
+Second line of description.
+
+Register a new user:
+PUT /api/register
+
+  This is api entry description
+
+Request:
+string email User email [required]
+string password User password [required]
+string about About user
+
+Response:
+object data User profile
+  int id User id
+  string email User email
+  string about About user
