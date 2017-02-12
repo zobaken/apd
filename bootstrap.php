@@ -2,5 +2,9 @@
 
 if(!defined('APD_ROOT')) {
     define('APD_ROOT', realpath(__DIR__));
-    require_once APD_ROOT . '/vendor/autoload.php';
+    if (file_exists(APD_ROOT . '/vendor/autoload.php')) {
+        require_once APD_ROOT . '/vendor/autoload.php';
+    } elseif(file_exists(APD_ROOT . '../autoload.php')) {
+        require_once APD_ROOT . '/vendor/autoload.php';
+    }
 }
