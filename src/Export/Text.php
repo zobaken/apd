@@ -49,12 +49,12 @@ class Text implements Exportable {
                     foreach ($entry->request as $field) {
                         $default = '';
                         if ($field->defaultValue !== null) {
-                            $default = "[default={$field->defaultValier}]";
+                            $default = "[default={$field->defaultValue}]";
                         }
                         if ($field->isRequired) {
-                            $text .= sprintf("%s %s %s%s [required]\n", $field->type, $field->name, $field->title, $default);
+                            $text .= sprintf("%s %s %s [required]\n", $field->type, $field->name, $field->title);
                         } else {
-                            $text .= sprintf("%s %s %s%s\n", $field->type, $field->name, $field->title);
+                            $text .= sprintf("%s %s %s %s\n", $field->type, $field->name, $field->title, $default);
                         }
                     }
                     $text .= sprintf("\nResponse:\n");

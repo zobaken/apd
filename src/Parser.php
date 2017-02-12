@@ -20,7 +20,13 @@ class Parser {
     const TAG_PATTERN = '/\@(\w+)\s+(.+)/';
 
     /** Get first word of line  pattern */
-    const FIRST_WORD = '/^([^ ]+)\s+(.+)$/';
+    const FIRST_WORD_PATTERN = '/^([^ ]+)\s+(.+)$/';
+
+    /** Get field name default value pattern */
+    const FIELD_TYPE_DEFAULT_VALUE_PATTERN = '/([^ ]+)=([^ \"]+)\s+(.+)/';
+
+    /** Get field name default string value pattern */
+    const FIELD_TYPE_DEFAULT_VALUE_STRING_PATTERN = '/([^ ]+)=\"([^\"]+)\"\s+(.+)/';
 
     /** @var array Files to parse */
     protected $files = [];
@@ -214,29 +220,32 @@ class Parser {
      */
     protected function parseField($line, &$service) {
         $field = new Field();
-        list($type, $name, $title) = $this->firstWords($line, 2);
-        list($open, $titleNew) = $this->firstWords($title);
-        // TODO: apply stack to objects
-        if (($type == 'object' || $type == 'array') && $open == '{') {
-            $service = 'open';
-            $title = $titleNew;
-        }
-        if (($type == 'object' || $type == 'array') && $open == '}') {
-            $service = 'close';
-            $this->currentObject = null;
-            $title = $titleNew;
-        }
+        list($field->type, $line) = $this->firstWords($line);
         $field->isRequired = true;
-        $field->name = $name;
-        $field->type = $type;
-        $field->title = $title;
-        if (preg_match('/^(\w+)\|null$/', $type, $m)) {
+        if (preg_match('/^(\w+)\|null$/',$field->type, $m)) {
             $field->isRequired = false;
             $field->type = $m[1];
         }
-        if (preg_match('/^(\w+)\s*\=\s*(.+)$/', $name, $m)) {
+        if (preg_match(static::FIELD_TYPE_DEFAULT_VALUE_STRING_PATTERN, $line, $m) || preg_match(static::FIELD_TYPE_DEFAULT_VALUE_PATTERN, $line, $m)) {
+            $field->name = trim($m[1]);
             $field->defaultValue = $m[2];
-            $field->name = $m[1];
+            $line = $m[3];
+            $field->isRequired = false;
+            $field->title = $m[3];
+        } else {
+            list($field->name, $line) = $this->firstWords($line);
+            $field->title = $line;
+        }
+        list($open, $titleNew) = $this->firstWords($line);
+        // TODO: apply stack to objects
+        if (($field->type == 'object' || $field->type == 'array') && $open == '{') {
+            $service = 'open';
+            $field->title = $titleNew;
+        }
+        if (($field->type == 'object' || $field->type == 'array') && $open == '}') {
+            $service = 'close';
+            $this->currentObject = null;
+            $field->title = $titleNew;
         }
         return $field;
     }
@@ -275,7 +284,7 @@ class Parser {
     protected function tagResponse($line) {
         $entry = $this->getCurrentEntry();
         if (!$entry) {
-            return;
+            return null;
         }
         $field = $this->parseField($line, $service);
         if ($service != 'close') {
@@ -373,7 +382,7 @@ class Parser {
         $result = [];
         $i = 0;
         while($i++ < $count) {
-            if ($line && preg_match(static::FIRST_WORD, $line, $m)) {
+            if ($line && preg_match(static::FIRST_WORD_PATTERN, $line, $m)) {
                 $result [] = strtolower($m[1]);
                 $line = $m[2];
             } elseif($line) {

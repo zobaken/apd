@@ -45,25 +45,29 @@ class Markdown implements Exportable {
                     if ($entry->description) {
                         $text .= sprintf("\n  %s\n", trim($entry->description));
                     }
-                    $doField = function($field, $indent) use (&$text, &$doField) {
-                        $text .= sprintf("|_%s_|%s__%s__|%s|%s|\n", $field->type, $indent, $field->name, $field->title, $field->isRequired ? 'yes' : '');
+                    $doField = function($field, $indent, $type) use (&$text, &$doField) {
+                        if ($type == 'request') {
+                            $text .= sprintf("|_%s_|%s__%s__|%s|%s|%s|\n", $field->type, $indent, $field->name, $field->title, $field->isRequired ? '_required_' : '_optional_', $field->defaultValue);
+                        } else {
+                            $text .= sprintf("|_%s_|%s__%s__|%s|\n", $field->type, $indent, $field->name, $field->title);
+                        }
                         if (($field->type == 'object' || $field->type == 'array') && $field->fields) {
-                            foreach ($field->fields as $field) {
-                                $doField($field, $indent . '- ');
+                            foreach ($field->fields as $fieldInner) {
+                                $doField($fieldInner, $indent . $field->name . '/', $type);
                             }
                         }
                     };
                     $text .= sprintf("\n#### Request parameters\n");
-                    $text .= sprintf("|Type|Name|Description|Required|\n");
-                    $text .= sprintf("|---|---|---|---|\n");
+                    $text .= sprintf("|Type|Name|Description|Required|Default value|\n");
+                    $text .= sprintf("|---|---|---|---|---|\n");
                     foreach ($entry->request as $field) {
-                        $doField($field, '');
+                        $doField($field, '', 'request');
                     }
                     $text .= sprintf("\n#### Response fields\n");
-                    $text .= sprintf("|Type|Name|Description|Required|\n");
-                    $text .= sprintf("|---|---|---|---|\n");
+                    $text .= sprintf("|Type|Name|Description|\n");
+                    $text .= sprintf("|---|---|---|\n");
                     foreach ($entry->response as $field) {
-                        $doField($field, '');
+                        $doField($field, '', 'response');
                     }
                 }
             }

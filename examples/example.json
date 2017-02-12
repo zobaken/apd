@@ -7,7 +7,7 @@
             "profile": {
                 "name": "profile",
                 "title": "Register and login section",
-                "description": "This is section description text.\nSecond line of description.\n",
+                "description": "This is section description text.\n",
                 "entries": [
                     {
                         "uri": "\/register",
@@ -34,12 +34,30 @@
                                 "fields": []
                             },
                             {
+                                "name": "age",
+                                "type": "int",
+                                "title": "User age",
+                                "description": null,
+                                "isRequired": false,
+                                "defaultValue": null,
+                                "fields": []
+                            },
+                            {
                                 "name": "about",
                                 "type": "string",
                                 "title": "About user",
                                 "description": null,
                                 "isRequired": false,
-                                "defaultValue": null,
+                                "defaultValue": "To be filled",
+                                "fields": []
+                            },
+                            {
+                                "name": "profile_image",
+                                "type": "string",
+                                "title": "About user",
+                                "description": null,
+                                "isRequired": false,
+                                "defaultValue": "http:\/\/someserver\/default.png",
                                 "fields": []
                             }
                         ],

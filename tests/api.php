@@ -18,7 +18,9 @@
  *
  * @request string email User email
  * @request string password User password
- * @request string|null about About user
+ * @request int|null age User age
+ * @request string about="To be filled" About user
+ * @request string profile_image=http://someserver/default.png About user
  * @response object data { User profile
  * @response   int id User id
  * @response   string email User email
