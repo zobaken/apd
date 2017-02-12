@@ -87,6 +87,7 @@ class Parser {
         foreach ($this->files as $file) {
             $this->parseFile($file);
         }
+        return $this->getEndpoints();
     }
 
     /**
@@ -94,7 +95,7 @@ class Parser {
      * @return array
      */
     public function getEndpoints() {
-        return $this->endpoints;
+        return array_values($this->endpoints);
     }
 
     /**

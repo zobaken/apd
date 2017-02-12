@@ -1,0 +1,90 @@
+[
+    {
+        "name": "api",
+        "title": null,
+        "description": null,
+        "sections": {
+            "profile": {
+                "name": "profile",
+                "title": "Register and login section",
+                "description": "This is section description text.\nSecond line of description.\n",
+                "entries": [
+                    {
+                        "uri": "\/register",
+                        "method": "put",
+                        "title": "Register a new user",
+                        "description": "This is api entry description\n",
+                        "request": [
+                            {
+                                "name": "email",
+                                "type": "string",
+                                "title": "User email",
+                                "description": null,
+                                "isRequired": true,
+                                "defaultValue": null,
+                                "fields": []
+                            },
+                            {
+                                "name": "password",
+                                "type": "string",
+                                "title": "User password",
+                                "description": null,
+                                "isRequired": true,
+                                "defaultValue": null,
+                                "fields": []
+                            },
+                            {
+                                "name": "about",
+                                "type": "string",
+                                "title": "About user",
+                                "description": null,
+                                "isRequired": false,
+                                "defaultValue": null,
+                                "fields": []
+                            }
+                        ],
+                        "response": [
+                            {
+                                "name": "data",
+                                "type": "object",
+                                "title": "User profile",
+                                "description": null,
+                                "isRequired": true,
+                                "defaultValue": null,
+                                "fields": [
+                                    {
+                                        "name": "id",
+                                        "type": "int",
+                                        "title": "User id",
+                                        "description": null,
+                                        "isRequired": true,
+                                        "defaultValue": null,
+                                        "fields": []
+                                    },
+                                    {
+                                        "name": "email",
+                                        "type": "string",
+                                        "title": "User email",
+                                        "description": null,
+                                        "isRequired": true,
+                                        "defaultValue": null,
+                                        "fields": []
+                                    },
+                                    {
+                                        "name": "about",
+                                        "type": "string",
+                                        "title": "About user",
+                                        "description": null,
+                                        "isRequired": false,
+                                        "defaultValue": null,
+                                        "fields": []
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    }
+]

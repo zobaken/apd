@@ -11,6 +11,13 @@ use Apd\Exportable;
  */
 class Text implements Exportable {
 
+    /**
+     * Return text
+     * @param Parser $parser
+     * @param string $baseUrl
+     * @param string $version
+     * @return string
+     */
     public function export(Parser $parser, $baseUrl = '', $version = '') {
         $text = '';
         $endpoints = $parser->getEndpoints();

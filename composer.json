@@ -21,12 +21,13 @@
   },
   "license": "MIT",
   "require": {
+    "php": ">=5.4",
     "cebe/markdown": "~1.0.1"
   },
   "bin": [
-    "bin/apd-html",
-    "bin/apd-markdown",
-    "bin/apd-text"
+    "bin/apd-html.php",
+    "bin/apd-markdown.php",
+    "bin/apd-text.php"
   ],
   "autoload": {
     "files": [
