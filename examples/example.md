@@ -1,28 +1,45 @@
+# Test project
 
-Endpoint: `/api`
+Version: **1.0**
+
+Project description.
+## Data types
+### Profile
+#### User profile object
+
+  Registered class description.
+
+|Type|Name|Description|
+|---|---|---|
+|_int_|__id__|User id|
+|_string_|__email__|User email|
+|_string_|__about__|About user|
+|_string_|__profile_image__|Profile image|
+|_object_|__address__|User address|
+|_string_|address/__city__|City|
+|_string_|address/__street__|Street|
+|_string_|address/__number__|House number|
 
 ## Register and login section
 
-This is section description text.
+Section description.
 
 ### Register a new user
-*PUT* `/api/register`
+*PUT* `/profile/register`
 
-  This is api entry description
+  Call entry description
 
 #### Request parameters
 |Type|Name|Description|Required|Default value|
 |---|---|---|---|---|
-|_string_|__email__|User email|_required_||
-|_string_|__password__|User password|_required_||
-|_int_|__age__|User age|_optional_||
-|_string_|__about__|About user|_optional_|To be filled|
-|_string_|__profile_image__|About user|_optional_|http://someserver/default.png|
+|_string_|__token__|Security token|_required_||
+|_object_|__profile__|Profile fields|_required_||
+|_string_|profile/__email__|User email|_required_||
+|_string_|profile/__password__|User password|_required_||
+|_string_|profile/__about__|About user|_optional_|To be filled|
+|_string_|profile/__profile_image__|About user|_optional_|http://someserver/default.png|
 
 #### Response fields
 |Type|Name|Description|
 |---|---|---|
-|_object_|__data__|User profile|
-|_int_|data/__id__|User id|
-|_string_|data/__email__|User email|
-|_string_|data/__about__|About user|
+|_Profile_|__data__|User profile|

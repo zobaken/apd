@@ -1,88 +1,52 @@
 [
     {
-        "name": "api",
-        "title": null,
-        "description": null,
+        "name": "test",
+        "title": "Test project",
+        "version": "1.0",
+        "baseUrl": null,
+        "description": "Project description.",
         "sections": {
             "profile": {
                 "name": "profile",
                 "title": "Register and login section",
-                "description": "This is section description text.\n",
+                "description": "Section description.",
                 "entries": [
                     {
-                        "uri": "\/register",
-                        "method": "put",
+                        "uri": "\/profile\/register",
+                        "method": "PUT",
                         "title": "Register a new user",
-                        "description": "This is api entry description\n",
+                        "description": "Call entry description",
                         "request": [
                             {
-                                "name": "email",
+                                "name": "token",
                                 "type": "string",
-                                "title": "User email",
+                                "title": "Security token",
                                 "description": null,
                                 "isRequired": true,
                                 "defaultValue": null,
                                 "fields": []
                             },
                             {
-                                "name": "password",
-                                "type": "string",
-                                "title": "User password",
-                                "description": null,
-                                "isRequired": true,
-                                "defaultValue": null,
-                                "fields": []
-                            },
-                            {
-                                "name": "age",
-                                "type": "int",
-                                "title": "User age",
-                                "description": null,
-                                "isRequired": false,
-                                "defaultValue": null,
-                                "fields": []
-                            },
-                            {
-                                "name": "about",
-                                "type": "string",
-                                "title": "About user",
-                                "description": null,
-                                "isRequired": false,
-                                "defaultValue": "To be filled",
-                                "fields": []
-                            },
-                            {
-                                "name": "profile_image",
-                                "type": "string",
-                                "title": "About user",
-                                "description": null,
-                                "isRequired": false,
-                                "defaultValue": "http:\/\/someserver\/default.png",
-                                "fields": []
-                            }
-                        ],
-                        "response": [
-                            {
-                                "name": "data",
+                                "name": "profile",
                                 "type": "object",
-                                "title": "User profile",
+                                "title": "Profile fields",
                                 "description": null,
                                 "isRequired": true,
                                 "defaultValue": null,
                                 "fields": [
                                     {
-                                        "name": "id",
-                                        "type": "int",
-                                        "title": "User id",
+                                        "name": "email",
+                                        "type": "string",
+                                        "title": "User email",
                                         "description": null,
                                         "isRequired": true,
                                         "defaultValue": null,
                                         "fields": []
                                     },
                                     {
-                                        "name": "email",
+                                        "name": "password",
                                         "type": "string",
-                                        "title": "User email",
+                                        "title": "User password",
                                         "description": null,
                                         "isRequired": true,
                                         "defaultValue": null,
@@ -94,10 +58,113 @@
                                         "title": "About user",
                                         "description": null,
                                         "isRequired": false,
-                                        "defaultValue": null,
+                                        "defaultValue": "To be filled",
+                                        "fields": []
+                                    },
+                                    {
+                                        "name": "profile_image",
+                                        "type": "string",
+                                        "title": "About user",
+                                        "description": null,
+                                        "isRequired": false,
+                                        "defaultValue": "http:\/\/someserver\/default.png",
                                         "fields": []
                                     }
                                 ]
+                            }
+                        ],
+                        "response": [
+                            {
+                                "name": "data",
+                                "type": "Profile",
+                                "title": "User profile",
+                                "description": null,
+                                "isRequired": true,
+                                "defaultValue": null,
+                                "fields": []
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        "classes": {
+            "Profile": {
+                "name": "Profile",
+                "type": "object",
+                "title": "User profile object",
+                "description": "Registered class description.",
+                "fields": [
+                    {
+                        "name": "id",
+                        "type": "int",
+                        "title": "User id",
+                        "description": null,
+                        "isRequired": true,
+                        "defaultValue": null,
+                        "fields": []
+                    },
+                    {
+                        "name": "email",
+                        "type": "string",
+                        "title": "User email",
+                        "description": null,
+                        "isRequired": true,
+                        "defaultValue": null,
+                        "fields": []
+                    },
+                    {
+                        "name": "about",
+                        "type": "string",
+                        "title": "About user",
+                        "description": null,
+                        "isRequired": false,
+                        "defaultValue": null,
+                        "fields": []
+                    },
+                    {
+                        "name": "profile_image",
+                        "type": "string",
+                        "title": "Profile image",
+                        "description": null,
+                        "isRequired": false,
+                        "defaultValue": null,
+                        "fields": []
+                    },
+                    {
+                        "name": "address",
+                        "type": "object",
+                        "title": "User address",
+                        "description": null,
+                        "isRequired": false,
+                        "defaultValue": null,
+                        "fields": [
+                            {
+                                "name": "city",
+                                "type": "string",
+                                "title": "City",
+                                "description": null,
+                                "isRequired": true,
+                                "defaultValue": null,
+                                "fields": []
+                            },
+                            {
+                                "name": "street",
+                                "type": "string",
+                                "title": "Street",
+                                "description": null,
+                                "isRequired": true,
+                                "defaultValue": null,
+                                "fields": []
+                            },
+                            {
+                                "name": "number",
+                                "type": "string",
+                                "title": "House number",
+                                "description": null,
+                                "isRequired": true,
+                                "defaultValue": null,
+                                "fields": []
                             }
                         ]
                     }

@@ -4,6 +4,8 @@ namespace Apd\Export;
 
 use Apd\Parser;
 use Apd\Exportable;
+use Apd\Structure\Field;
+use Apd\Structure\Object;
 
 /**
  * Class for exporting apd parsed data as markdown syntax
@@ -21,16 +23,33 @@ class Markdown implements Exportable {
      */
     public function export(Parser $parser, $baseUrl = '', $version = '') {
         $text = '';
-        $endpoints = $parser->getEndpoints();
-        foreach ($endpoints as $endpoint) {
-            if ($endpoint->title) {
-                $text .= sprintf("# %s\n", $endpoint->title);
+        $projects = $parser->getProjects();
+        foreach ($projects as $project) {
+            if ($project->title) {
+                $text .= sprintf("# %s\n", $project->title);
             }
-            $text .= sprintf("\nEndpoint: `%s/%s`\n", $baseUrl, $endpoint->name);
             if ($version) {
-                $text .= sprintf("Version: %s\n", $version);
+                $project->version = $version;
             }
-            foreach ($endpoint->sections as $section) {
+            if ($project->version) {
+                $text .= sprintf("\nVersion: **%s**\n", $project->version);
+            }
+            if ($baseUrl) {
+                $project->baseUrl = $baseUrl;
+            }
+            if ($project->baseUrl) {
+                $text .= sprintf("\nBase Url: `%s`\n", $project->baseUrl);
+            }
+            if ($project->description) {
+                $text .= sprintf("\n%s\n", $project->description);
+            }
+            if ($project->classes) {
+                $text .= "## Data types\n";
+            }
+            foreach ($project->classes as $object) {
+                $text .= $this->renderClass($object);
+            }
+            foreach ($project->sections as $section) {
                 $text .= sprintf("\n");
                 if ($section->title) {
                     $text .= sprintf("## %s\n", $section->title);
@@ -41,38 +60,60 @@ class Markdown implements Exportable {
                 $text .= sprintf("\n");
                 foreach ($section->entries as $entry) {
                     $text .= sprintf("### %s\n", $entry->title);
-                    $text .= sprintf("*%s* `%s/%s%s`\n", strtoupper($entry->method), $baseUrl, $endpoint->name, $entry->uri);
+                    $text .= sprintf("*%s* `%s%s`\n", strtoupper($entry->method), $baseUrl, $entry->uri);
                     if ($entry->description) {
                         $text .= sprintf("\n  %s\n", trim($entry->description));
                     }
-                    $doField = function($field, $indent, $type) use (&$text, &$doField) {
-                        if ($type == 'request') {
-                            $text .= sprintf("|_%s_|%s__%s__|%s|%s|%s|\n", $field->type, $indent, $field->name, $field->title, $field->isRequired ? '_required_' : '_optional_', $field->defaultValue);
-                        } else {
-                            $text .= sprintf("|_%s_|%s__%s__|%s|\n", $field->type, $indent, $field->name, $field->title);
-                        }
-                        if (($field->type == 'object' || $field->type == 'array') && $field->fields) {
-                            foreach ($field->fields as $fieldInner) {
-                                $doField($fieldInner, $indent . $field->name . '/', $type);
-                            }
-                        }
-                    };
                     $text .= sprintf("\n#### Request parameters\n");
                     $text .= sprintf("|Type|Name|Description|Required|Default value|\n");
                     $text .= sprintf("|---|---|---|---|---|\n");
                     foreach ($entry->request as $field) {
-                        $doField($field, '', 'request');
+                        $text .= $this->renderField($field, '', 'request');
                     }
                     $text .= sprintf("\n#### Response fields\n");
                     $text .= sprintf("|Type|Name|Description|\n");
                     $text .= sprintf("|---|---|---|\n");
                     foreach ($entry->response as $field) {
-                        $doField($field, '', 'response');
+                        $text .= $this->renderField($field, '', 'response');
                     }
                 }
             }
         }
         return $text;
+    }
+
+    protected function renderField(Field $field, string $indent, string $type) {
+        $text = '';
+        if ($type == 'request') {
+            $text .= sprintf("|_%s_|%s__%s__|%s|%s|%s|\n", $field->type, $indent, $field->name, $field->title, $field->isRequired ? '_required_' : '_optional_', $field->defaultValue);
+        } else {
+            $text .= sprintf("|_%s_|%s__%s__|%s|\n", $field->type, $indent, $field->name, $field->title);
+        }
+        if ($field->type == 'object' && $field->fields) {
+            foreach ($field->fields as $fieldInner) {
+                $text .= $this->renderField($fieldInner, $indent . $field->name . '/', $type);
+            }
+        }
+        return $text;
+    }
+
+    protected function renderClass(Object $class) {
+        $text = '';
+        $text .= sprintf("### %s\n", $class->name);
+        $text .= sprintf("#### %s\n", $class->title);
+        if ($class->description) {
+            $text .= sprintf("\n  %s\n\n", trim($class->description));
+        }
+        $text .= sprintf("|Type|Name|Description|\n");
+        $text .= sprintf("|---|---|---|\n");
+        foreach ($class->fields as $field) {
+            $text .= $this->renderField($field, '', 'response');
+        }
+        return $text;
+    }
+
+    protected function renderObject(Field $object) {
+
     }
 
 }
