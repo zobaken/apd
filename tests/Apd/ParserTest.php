@@ -2,9 +2,9 @@
 
 namespace Tests\Apd;
 
-use PHPUnit\Framework\TestCase;
 use Apd\Parser;
 use Apd\Export\Text;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Class ParserTest
@@ -12,11 +12,7 @@ use Apd\Export\Text;
  */
 class ParserTest extends TestCase
 {
-    /**
-     * Apd parser test
-     *
-     * @return void
-     */
+
     public function testParser()
     {
         $path = APD_ROOT . '/tests';
