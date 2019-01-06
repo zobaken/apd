@@ -8,22 +8,14 @@ use Apd\Parser;
 use Apd\Export\Markdown;
 
 if ($argc < 2) {
-    error_log("Usage: {$script} <path to php files> [--wrap-html]\n");
-    exit(1);
+    exit("Usage: {$script} <path to php files> [--wrap-html]\n");
 }
 
 if (isset($argv[2]) && $argv[2] != '--wrap-html') {
-    error_log("Usage: {$script} <path to php files> [--wrap-html]\n");
-    exit(1);
+    exit("Usage: {$script} <path to php files> [--wrap-html]\n");
 }
 
 $path = realpath($argv[1]);
-
-if (!$path) {
-    error_log("Path not found\n");
-    exit(1);
-}
-
 $parser = new Parser();
 $parser->path($path);
 $parser->parse();

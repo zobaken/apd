@@ -1,7 +1,7 @@
 <?php
 
 namespace Apd;
-use Apd\Structure\Project;
+use Apd\Structure\Endpoint;
 use Apd\Structure\Section;
 use Apd\Structure\Field;
 use Apd\Structure\Entry;
@@ -31,14 +31,14 @@ class Parser {
     /** @var array Files to parse */
     protected $files = [];
 
-    /** @var string Default project name */
-    protected $defaultProject;
+    /** @var string Default endpoint name */
+    protected $defaultEndpoint;
 
-    /** @var array Projects */
-    protected $projects = [];
+    /** @var array Endpoints */
+    protected $endpoints = [];
 
-    /** @var Project Current project */
-    protected $currentProject;
+    /** @var Endpoint Current endpoint */
+    protected $currentEndpoint;
 
     /** @var array Sections */
     protected $sections = [];
@@ -60,10 +60,10 @@ class Parser {
 
     /**
      * Parser constructor.
-     * @param string $defaultProject Default endpont name
+     * @param string $defaultEndpoint Default endpont name
      */
-    public function __construct($defaultProject = 'default') {
-        $this->defaultProject = $defaultProject;
+    public function __construct($defaultEndpoint = 'api') {
+        $this->defaultEndpoint = $defaultEndpoint;
     }
 
     /**
@@ -93,15 +93,15 @@ class Parser {
         foreach ($this->files as $file) {
             $this->parseFile($file);
         }
-        return $this->getProjects();
+        return $this->getEndpoints();
     }
 
     /**
-     * Get parsed projects
+     * Get parsed endpoints
      * @return array
      */
-    public function getProjects() {
-        return array_values($this->projects);
+    public function getEndpoints() {
+        return array_values($this->endpoints);
     }
 
     /**
@@ -156,21 +156,12 @@ class Parser {
      * @param $line
      */
     protected function parseCommentLine($line) {
-        if (!$this->lastTagEntry) return;
-
-        if (!$line && $this->currentObject) {
-            $this->currentObject = null;
-        } elseif ($this->currentObject) {
-            $field = $this->parseField($line, $service);
-            if ($service == 'open') {
-                $this->objectStack[count($this->objectStack) - 1]->fields []= $field;
-            } elseif ($service != 'close') {
-                $this->currentObject->fields [] = $field;
+        if ($this->lastTagEntry) {
+            if ($this->lastTagEntry->description) {
+                $this->lastTagEntry->description .= "\n" . $line;
+            } elseif($line) {
+                $this->lastTagEntry->description = $line;
             }
-        } elseif (trim($line, "\n") && $this->lastTagEntry->description) {
-            $this->lastTagEntry->description .= "\n" . $line;
-        } elseif($line) {
-            $this->lastTagEntry->description = $line;
         }
     }
 
@@ -190,11 +181,11 @@ class Parser {
     }
 
     /**
-     * Call tag handler
+     * Api tag handler
      * @param string $line
      * @return Entry
      */
-    protected function tagCall($line) {
+    protected function tagApi($line) {
         list($method, $uri, $title) = $this->firstWords($line, 2);
         $section = $this->getCurrentSection();
         $entry = new Entry();
@@ -207,19 +198,18 @@ class Parser {
     }
 
     /**
-     * Project tag handler
+     * Endpoint tag handler
      * @param string $line
-     * @return Project|mixed
+     * @return Endpoint|mixed
      */
-    protected function tagProject($line) {
-        list($name, $line) = $this->firstWords($line);
-        list($version, $title) = $this->firstWords($line);
-        $project = $this->getProject($name, $version);
+    protected function tagEndpoint($line) {
+        list($name, $title) = $this->firstWords($line);
+        $endpoint = $this->getEndpoint($name);
         if ($title) {
-            $project->title = $title;
+            $endpoint->title = $title;
         }
-        $this->currentProject = $project;
-        return $project;
+        $this->currentEndpoint = $endpoint;
+        return $endpoint;
     }
 
     /**
@@ -228,30 +218,15 @@ class Parser {
      * @param string $service 'open', 'close' or null
      * @return Field
      */
-    protected function parseField($line, &$service, $register = false) {
-        if ($register) {
-            $type = 'object';
-            $field = new Object();
-        } else {
-            list($type, $line) = $this->firstWords($line);
-            // Close object special case (no type)
-            if ($type == '}') {
-                $service = 'close';
-                $result = $this->currentObject;
-                $this->currentObject = array_pop($this->objectStack);
-                return $result;
-            }
-            $field = new Field();
-            $field->isRequired = true;
-            if (preg_match('/^(\w+)\|null$/',$type, $m)) {
-                $field->isRequired = false;
-                $type = $m[1];
-            }
+    protected function parseField($line, &$service) {
+        $field = new Field();
+        list($field->type, $line) = $this->firstWords($line);
+        $field->isRequired = true;
+        if (preg_match('/^(\w+)\|null$/',$field->type, $m)) {
+            $field->isRequired = false;
+            $field->type = $m[1];
         }
-        $field->type = $type;
-
-        if (preg_match(static::FIELD_TYPE_DEFAULT_VALUE_STRING_PATTERN, $line, $m)
-                || preg_match(static::FIELD_TYPE_DEFAULT_VALUE_PATTERN, $line, $m)) {
+        if (preg_match(static::FIELD_TYPE_DEFAULT_VALUE_STRING_PATTERN, $line, $m) || preg_match(static::FIELD_TYPE_DEFAULT_VALUE_PATTERN, $line, $m)) {
             $field->name = trim($m[1]);
             $field->defaultValue = $m[2];
             $line = $m[3];
@@ -262,20 +237,15 @@ class Parser {
             $field->title = $line;
         }
         list($open, $titleNew) = $this->firstWords($line);
-        if ($field->type == 'object') {
+        // TODO: apply stack to objects
+        if (($field->type == 'object' || $field->type == 'array') && $open == '{') {
             $service = 'open';
-            if ($open == '{') {
-                $field->title = $titleNew;
-            }
-            if ($this->currentObject) {
-                array_push($this->objectStack, $this->currentObject);
-            }
-            $this->currentObject = $field;
-        }
-        if ($open == '}') {
-            $service = 'close';
             $field->title = $titleNew;
-            $this->currentObject = array_pop($this->objectStack);
+        }
+        if (($field->type == 'object' || $field->type == 'array') && $open == '}') {
+            $service = 'close';
+            $this->currentObject = null;
+            $field->title = $titleNew;
         }
         return $field;
     }
@@ -290,10 +260,19 @@ class Parser {
         if (!$entry) {
             return null;
         }
-        $this->currentObject = null;
-        $this->objectStack = [];
         $field = $this->parseField($line, $service);
-        $entry->request [] = $field;
+        if ($service != 'close') {
+            if ($this->currentObject) {
+                $this->currentObject->fields [] = $field;
+            } else {
+                $entry->request [] = $field;
+            }
+        }
+        if ($service == 'open') {
+            $this->currentObject = $field;
+        } elseif ($service == 'close') {
+            $this->currentObject = null;
+        }
         return $field;
     }
 
@@ -307,34 +286,31 @@ class Parser {
         if (!$entry) {
             return null;
         }
-        $this->currentObject = null;
-        $this->objectStack = [];
         $field = $this->parseField($line, $service);
-        $entry->response [] = $field;
-        return $field;
-    }
-
-    /**
-     * Register tag handler
-     * @param $line
-     * @return Field
-     */
-    protected function tagRegister($line) {
-        $field = $this->parseField($line, $service, true);
-        $project = $this->getCurrentProject();
-        $project->classes[$field->name] = $this->currentObject;
-        return $field;
-    }
-
-    /**
-     * Return current project
-     * @return Project
-     */
-    protected function getCurrentProject() {
-        if (!$this->currentProject) {
-            $this->currentProject = $this->getProject($this->defaultProject);
+        if ($service != 'close') {
+            if ($this->currentObject) {
+                $this->currentObject->fields [] = $field;
+            } else {
+                $entry->response [] = $field;
+            }
         }
-        return $this->currentProject;
+        if ($service == 'open') {
+            $this->currentObject = $field;
+        } elseif ($service == 'close') {
+            $this->currentObject = null;
+        }
+        return $field;
+    }
+
+    /**
+     * Return current endpoint
+     * @return Endpoint
+     */
+    protected function getCurrentEndpoint() {
+        if (!$this->currentEndpoint) {
+            $this->currentEndpoint = $this->getEndpoint($this->defaultEndpoint);
+        }
+        return $this->currentEndpoint;
     }
 
     /**
@@ -371,29 +347,28 @@ class Parser {
             $section = new Section();
             $section->name = $name;
             $this->sections[$name] = $section;
-            $project = $this->getCurrentProject();
-            $project->sections[$name]= $section;
+            $endpoint = $this->getCurrentEndpoint();
+            $endpoint->sections[$name]= $section;
             return $section;
         }
     }
 
     /**
-     * Get project by name
+     * Get endpoint by name
      * @param string $name
-     * @return Project
+     * @return Endpoint
      */
-    protected function getProject($name, $version = null) {
-        if (isset($this->projects[$name])) {
-            return $this->projects[$name];
+    protected function getEndpoint($name) {
+        if (isset($this->endpoints[$name])) {
+            return $this->endpoints[$name];
         } else {
             $this->currentSection = null;
             $this->sections = null;
             $this->currentEntry = null;
-            $project = new Project();
-            $project->name = $name;
-            $project->version = $version;
-            $this->projects[$name] = $project;
-            return $project;
+            $endpoint = new Endpoint();
+            $endpoint->name = $name;
+            $this->endpoints[$name] = $endpoint;
+            return $endpoint;
         }
     }
 
@@ -408,7 +383,7 @@ class Parser {
         $i = 0;
         while($i++ < $count) {
             if ($line && preg_match(static::FIRST_WORD_PATTERN, $line, $m)) {
-                $result [] = $m[1];
+                $result [] = strtolower($m[1]);
                 $line = $m[2];
             } elseif($line) {
                 $result []= $line;

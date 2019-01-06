@@ -8,13 +8,10 @@ namespace Apd\Structure;
  */
 class Object {
 
-    /** @var string Object name */
+    /** @var string Object name*/
     var $name;
 
-    /** @var string Object type */
-    var $type;
-
-    /** @var string Object title */
+    /** @var string Object title*/
     var $title;
 
     /** @var string Object description*/

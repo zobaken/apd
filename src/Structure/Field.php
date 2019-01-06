@@ -8,13 +8,13 @@ namespace Apd\Structure;
  */
 class Field {
 
-    /** @var string Field name */
+    /** @var string Field name*/
     var $name;
 
-    /** @var string Field type */
+    /** @var string Field type*/
     var $type;
 
-    /** @var string Field title */
+    /** @var string Field title*/
     var $title;
 
     /** @var string Field description*/

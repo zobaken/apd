@@ -25,76 +25,64 @@ php vendor/bin/apd-html.php path-to-files > output.html
 ~~~
 ## Syntax
 Optional description can be placed after any tag.
-#### Project
+#### Endpoint
 ~~~
-@project <shortname> <version> <Title> 
+@endpoint <Enpoint path> <Endpoint title> 
 ~~~
+Endpoint path defaults to `api`.
 #### Section
 ~~~
-@section <Section-name> <Section title> 
+@endpoint <Section-name> <Section title> 
 ~~~
-#### Call entry
+#### Api entry
 ~~~
-@call <Method> <Path> <Title> 
+@api <Method> <Path> <Title> 
 ~~~
 #### Request parameter
 ~~~
 @request <Type> <Name> <Title> 
 ~~~
 If parameter is optional then append `|null` to its type, like `string|null`. 
-
-If type is `object` then a list of nested fields can be included:
-~~~
-@request object data Request object
-int id User id
-string email User email
-~~~
 #### Response field
 ~~~
 @response <Type> <Name> <Title> 
 ~~~
-#### Register object
-You can define an object and use it later then. See example below.
+If type is `object` or `array` then a list of nested fields can be included:
+~~~
+@response <Type> <Name> { <Title>
+    @response <Type> <Name> <Title>
+    ...
+@response <Type> <Name> } 
+~~~
 ## Example
 This is a simple example.
 ~~~php
 /**
- * @project test 1.0 Test project
- *
- * Project description.
- *
  * @section profile Register and login section
  *
- * Section description.
+ * This is section description text.
  *
- * @register Profile User profile object
- * int id User id
- * string email User email
- * string|null about About user
- * string|null profile_image Profile image
- * object|null address { User address
- *   string city City
- *   string street Street
- *   string number House number
- * }
- *
- * Registered class description.
- *
+ * @register object profile {
+ * @register int id User id
+ * @register string email User email
+ * @register }
  */
 
 /**
- * @call PUT /profile/register Register a new user
+ * @api PUT /register Register a new user
  *
- * Call entry description
+ * This is api entry description
  *
- * @request string token Security token
- * @request object profile Profile fields
- * string email User email
- * string password User password
- * string about="To be filled" About user
- * string profile_image=http://someserver/default.png About user
-
- * @response Profile data User profile
+ * @request string email User email
+ * @request string password User password
+ * @request int|null age User age
+ * @request string about="To be filled" About user
+ * @request string profile_image=http://someserver/default.png About user
+ * @response object data { User profile
+ * @response   int id User id
+ * @response   string email User email
+ * @response   string|null about About user
+ * @response object data }
  */
 ~~~
 * [JSON Output](examples/example.json)

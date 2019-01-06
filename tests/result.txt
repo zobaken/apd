@@ -1,41 +1,25 @@
-TEST PROJECT
-Version: 1.0
-Project description.
 
-DATA TYPES
+Endpoint: 
+/api
 
-User profile object
-Registered class description.
+Register and login section
 
-  Profile {
-    int id (required) User id
-    string email (required) User email
-    string about  About user
-    string profile_image  Profile image
-    object address { "User address"
-      string city (required) City
-      string street (required) Street
-      string number (required) House number
-    }
-  }
+This is section description text.
 
-REGISTER AND LOGIN SECTION
+Register a new user:
+PUT /api/register
 
-Section description.
-
-PUT /profile/register
-Register a new user
-
-Call entry description
+  This is api entry description
 
 Request:
-  string token (required) Security token
-  object profile { "Profile fields" (required)
-    string email (required) User email
-    string password (required) User password
-    string about (default="To be filled") About user
-    string profile_image (default="http://someserver/default.png") About user
-  }
+string email User email [required]
+string password User password [required]
+int age User age 
+string about About user [default=To be filled]
+string profile_image About user [default=http://someserver/default.png]
 
 Response:
-  Profile data (required) User profile
+object data User profile
+  int id User id
+  string email User email
+  string about About user
