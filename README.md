@@ -5,7 +5,7 @@ This is a simple library that helps to create api documentation directly
 ## Installation
 You are required to use composer:
 ~~~
-composer require zobaken/apd ~0.1
+composer require zobaken/apd ~0.3
 ~~~
 ## Usage
 To get parsed structure:
